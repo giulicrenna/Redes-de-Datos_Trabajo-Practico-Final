@@ -89,6 +89,7 @@ def add_nobel_data(nobel_data: dict) -> bool:
     
     if nobels is None:
         return False
+    
     nobels["prizes"].append(nobel_data)
     
     with open(NOBELS_PATH, 'w') as file_handler:
