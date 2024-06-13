@@ -6,7 +6,23 @@ Redes de Datos - Tecnicatura Universitaria en Inteligencia Artificial
 - Giuliano Crenna @giulicrenna
 - Bruno Pace @bpace1
 
-## Como correr el Script
+## Como correr el cliente y el servidor
+
+En dos terminales distintas correr:
+
+### Servidor
+
+```bash
+./run_server.sh
+```
+
+### Client
+
+```bash
+./run_client.sh
+```
+
+## Como Instalar dependencias y Setup del proyecto:
 
 *Windows:*
 
@@ -18,6 +34,16 @@ python -m venv .venv
 pip install -r requirements.txt
 
 python main.py
+
+.venv/Scripts/deactivate
+
+python -m venv .venv_client
+
+.venv_clieint/Scripts/activate
+
+pip install -r requirements.txt
+
+.venv_client/Scripts/deactivate
 ```
 
 *Linux:*
@@ -29,5 +55,13 @@ source .venv/bin/activate
 
 pip3 install -r requirements.txt
 
-python3 main.py
+source .venv/bin/deactivate
+
+python3 -m venv .venv_client
+
+source .venv_client/bin/activate
+
+pip3 install -r requirements.txt
+
+source .venv_client/bin/deactivate
 ```

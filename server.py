@@ -1,3 +1,5 @@
+# TODO: Acordame de crear el cliente.
+
 from src.data_manipulation import (users_handler,
                                    nobels_handler,
                                    validate_user,
@@ -8,7 +10,6 @@ from typing import IO, Any, List
 from pydantic import BaseModel
 import uvicorn
 import fastapi
-import json
 
 app = fastapi.FastAPI()
 
