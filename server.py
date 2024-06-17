@@ -9,12 +9,15 @@ from pydantic import BaseModel
 import uvicorn
 import fastapi
 
-app = fastapi.FastAPI()
+"""
+endpoints:
+/delete_nobel/{username}/{password}
+/validate_user/{username}/{password}
+/delete_nobel/{username}/{password}
 
-class User(BaseModel):
-    username: str
-    password: str
+"""
 
+app: fastapi.FastAPI = fastapi.FastAPI()
 
 class Laureates(BaseModel):
     id: int
@@ -84,7 +87,7 @@ def add_nobel(username: str, password: str, nobel_data: NewNobel):
 @app.post("/create_user/{username}/{password}")
 def create_user_api(username: str, password: str):
     if not create_user(username, password):
-        raise fastapi.HTTPException(status_code=400, detail="User creation failed. User may already exist.")
+        raise fastapi.HTTPException(status_code=400, detail="La creación falló")
     
 
 
@@ -96,6 +99,8 @@ def change_password_api(username: str, password: str, new_password: str):
         return fastapi.HTTPException(status_code=401)
     
     return fastapi.HTTPException(status_code=200)
+
+
 
 if __name__ == "__main__":
     uvicorn.run('server:app',
