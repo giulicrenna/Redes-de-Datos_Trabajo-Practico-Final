@@ -1,5 +1,3 @@
-# TODO: Acordame de crear el cliente.
-
 from src.data_manipulation import (users_handler,
                                    nobels_handler,
                                    validate_user,
@@ -11,7 +9,15 @@ from pydantic import BaseModel
 import uvicorn
 import fastapi
 
-app = fastapi.FastAPI()
+"""
+endpoints:
+/delete_nobel/{username}/{password}
+/validate_user/{username}/{password}
+/delete_nobel/{username}/{password}
+
+"""
+
+app: fastapi.FastAPI = fastapi.FastAPI()
 
 class Laureates(BaseModel):
     id: int
@@ -81,8 +87,10 @@ def add_nobel(username: str, password: str, nobel_data: NewNobel):
 @app.post("/create_user/{username}/{password}")
 def create_user_api(username: str, password: str):
     if not create_user(username, password):
-        return fastapi.HTTPException(status_code=401)
+        raise fastapi.HTTPException(status_code=400, detail="La creación falló")
     
+
+
     return fastapi.HTTPException(status_code=200)
 
 @app.post('/change_password/{username}/{password}/{new_password}')
@@ -92,8 +100,10 @@ def change_password_api(username: str, password: str, new_password: str):
     
     return fastapi.HTTPException(status_code=200)
 
+
+
 if __name__ == "__main__":
-    uvicorn.run('main:app',
+    uvicorn.run('server:app',
                 host="localhost",
                 port=8000,
                 reload=True)
