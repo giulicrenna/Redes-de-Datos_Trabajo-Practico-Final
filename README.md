@@ -33,7 +33,7 @@ python -m venv .venv
 
 pip install -r requirements.txt
 
-python main.py
+python server.py
 
 .venv/Scripts/deactivate
 
@@ -42,6 +42,8 @@ python -m venv .venv_client
 .venv_clieint/Scripts/activate
 
 pip install -r requirements.txt
+
+python client.py
 
 .venv_client/Scripts/deactivate
 ```
@@ -55,6 +57,8 @@ source .venv/bin/activate
 
 pip3 install -r requirements.txt
 
+python3 server.py
+
 source .venv/bin/deactivate
 
 python3 -m venv .venv_client
@@ -62,6 +66,8 @@ python3 -m venv .venv_client
 source .venv_client/bin/activate
 
 pip3 install -r requirements.txt
+
+python3 client.py
 
 source .venv_client/bin/deactivate
 ```
