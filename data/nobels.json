@@ -1,19 +1,6 @@
 {
     "prizes": [
         {
-            "year": "2024",
-            "category": "medicine",
-            "laureates": [
-                {
-                    "id": 0,
-                    "firstname": "giuliano",
-                    "surname": "crenna",
-                    "motivation": "None",
-                    "share": 0
-                }
-            ]
-        },
-        {
             "year": "2023",
             "category": "chemistry",
             "laureates": [

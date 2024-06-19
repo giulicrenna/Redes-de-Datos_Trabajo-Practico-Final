@@ -26,6 +26,7 @@ En dos terminales distintas correr:
 
 *Windows:*
 
+```bash
 python -m venv .venv
 
 .venv/Scripts/activate
@@ -36,9 +37,9 @@ pip install -r requirements.txt
 
 python -m venv .venv_client
 
-.venv_clieint/Scripts/activate
+.venv_client/Scripts/activate
 
-pip install -r requirements.txt
+pip install requests
 
 .venv_client/Scripts/deactivate
 ```

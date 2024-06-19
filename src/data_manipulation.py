@@ -97,5 +97,10 @@ def add_nobel_data(nobel_data: dict) -> bool:
     
     return True
  
+def remove_nobel(new_data: dict) -> bool:
+    with open(NOBELS_PATH, 'w') as file_handler:
+        json.dump(new_data, file_handler, indent=4)
+    
+    return False
  
  

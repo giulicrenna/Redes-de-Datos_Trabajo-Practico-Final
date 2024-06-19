@@ -1,4 +1,4 @@
-from src.data_manipulation import (users_handler,
+from src.data_manipulation import (remove_nobel,
                                    nobels_handler,
                                    validate_user,
                                    create_user,
@@ -8,23 +8,22 @@ from typing import IO, Any, List
 from pydantic import BaseModel
 import uvicorn
 import fastapi
+import os
+import requests 
+import json
 
-"""
-endpoints:
-/delete_nobel/{username}/{password}
-/validate_user/{username}/{password}
-/delete_nobel/{username}/{password}
-
-"""
+if not 'nobels.json' in os.listdir('data'):
+    with open('data/nobels.json', 'w') as f:
+        json.dump(requests.get('https://api.nobelprize.org/v1/prize.json').json(), f)
 
 app: fastapi.FastAPI = fastapi.FastAPI()
 
 class Laureates(BaseModel):
-    id: int
+    id: str
     firstname: str
     surname: str
     motivation: str
-    share: int
+    share: str
 
 class NewNobel(BaseModel):
     year: str
@@ -74,7 +73,6 @@ def get_all_categories(username: str, password: str):
     
     return {"available_categories" : categories}
 
-
 @app.post("/add_nobel/{username}/{password}")
 def add_nobel(username: str, password: str, nobel_data: NewNobel):
     if not validate_user(username, password):
@@ -85,55 +83,46 @@ def add_nobel(username: str, password: str, nobel_data: NewNobel):
     return {"detail": "Nobel prize added successfully"}
 
 @app.post("/create_user/{username}/{password}")
-def create_user_api(username: str, password: str):
+def create_user(username: str, password: str):
     if not create_user(username, password):
         raise fastapi.HTTPException(status_code=400, detail="La creación falló")
     
-
-
     return fastapi.HTTPException(status_code=200)
 
 @app.post('/change_password/{username}/{password}/{new_password}')
 def change_password_api(username: str, password: str, new_password: str):
     if not change_password(username, password, new_password):
         return fastapi.HTTPException(status_code=401)
-    change_password
+    
     return fastapi.HTTPException(status_code=200)
 
-@app.put('/delete_nobel/{username}/{password}')
-def delete_nobel_api(username: str, password: str, nobel_data: Laureates):
-    if nobel_data.id not in nobels_handler():
-        return fastapi.HTTPException(status_code=404)
+@app.delete('/delete_nobel/{username}/{password}/laureate_id')
+def delete_nobel_api(username: str, password: str, laureate_id: str):
+    if not validate_user(username, password):
+        raise fastapi.HTTPException(status_code=401, detail="Unauthorized")
     
-    nobels_handler().remove(nobel_data.id)
-    return fastapi.HTTPException(status_code=200)
-
-
-@app.put('/update_nobel/{username}/{password}')
-def update_nobel_api(username: str, password: str, nobel_data: NewNobel):
-    check: bool = (nobels_handler.laureates[id] == nobel_data.laureates[id] and nobel_data.laureates[id] != None and 
-            nobel_data.year == nobels_handler.year and nobel_data.category == nobels_handler.category)
+    data: IO[Any] | None = nobels_handler()
+    new_data: dict[str, dict[str, Any]] = {"prizes" : []}
     
-    if not check:
-        return fastapi.HTTPException(status_code=404)
-
-    nobels_handler.laureates['firstname'] = nobel_data.firstname
-    nobels_handler.laureates['surname'] = nobel_data.surname
-    nobels_handler.laureates['motivation'] = nobel_data.motivation
-    nobels_handler.laureates['share'] = nobel_data.share
+    for nobel in data["prizes"]:
+        try:
+            if laureate_id not in [laureates["id"] for laureates in nobel["laureates"]]:
+                new_data["prizes"].append(nobel)
+            else:
+                print("Found: ", nobel)
+        except:
+            pass
+        
+    remove_nobel(new_data)
     
     return fastapi.HTTPException(status_code=200)
 
 @app.get('/validate_user/{username}/{password}')
 def validate_user_api(username: str, password:str):
     if not validate_user(username, password):
-        print('IF API')
-        {"status":"nowAllow"}
-    else:
-        return {"status":"allow"}
-
-
-
+        return {"status":"notAllowed"}
+        
+    return {"status":"allowed"}
 
 if __name__ == "__main__":
     uvicorn.run('server:app',

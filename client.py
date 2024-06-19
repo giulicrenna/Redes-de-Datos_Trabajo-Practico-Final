@@ -33,7 +33,10 @@ def get_nobel_by_category(username: str, password: str, category: str): #OK
 def get_all_categories(username: str, password: str): #OK
     response = requests.get(f"{base_url}/get_all_categories/{username}/{password}/")
     if response.status_code == 200:
-        print(response.text)
+        data: dict = response.json()["available_categories"]
+        for k, i in enumerate(data):
+            print(f'{k+1}: {i}')
+            
     return response.status_code, response.text
 
 def add_nobel(username: str, password: str, nobel_data: dict):
@@ -59,7 +62,6 @@ def create_user(username: str, password: str):
 def change_password(username: str, password: str, new_password: str):
     response = requests.post(f"{base_url}/change_password/{username}/{password}/{new_password}")
     return "Modificación de contraseña realizada correctamente." if response.status_code == 200 else (response.status_code, response.text)
-
 
 def _get_nobel_data() -> list[dict]:
     print("Ingrese datos del premio Nobel")
@@ -110,7 +112,7 @@ def actions_menu(user:str, password:str):
 
     while True:
         try:
-            teclado: str = int(input("Ingrese opción:"))
+            teclado: str = int(input("Ingrese opción: "))
         except ValueError:
             print(Fore.RED+"Por favor, ingrese un número válido.")
             continue
@@ -180,34 +182,35 @@ def main():
     y ejecuta la acción correspondiente.
     """
     print(Fore.BLUE+"Bienvenido al Software de Premios Nobel")
-    print(Fore.BLUE+"Pulse una tecla para continuar:")
+    print(Fore.BLUE+"Pulse una tecla para continuar: ")
     print(Fore.LIGHTBLUE_EX+"1. Iniciar Sesión")
     print(Fore.LIGHTBLUE_EX+"2. Crear Cuenta")
     print(Fore.LIGHTRED_EX+"0. Salir")
 
     try:
-        teclado: str = int(input())
+        teclado: str = int(input('> '))
     except ValueError:
         print(Fore.RED+"Por favor, ingrese un número válido.")
         main()
+        
     if teclado == 0:
         print(Fore.BLUE+"Gracias por usar el Software")
         sys.exit()
-    elif teclado == 2:
+    if teclado == 1:
         username: str = input("Ingrese su nombre de usuario: ")
         password: str = input("Ingrese su contraseña: ")
-        create_user(username, password)
-        main()
-    else:
-        username: str = input("Ingrese su nombre de usuario: ")
-        password: str = input("Ingrese su contraseña: ")
-        #print(type(validate_user(username, password)['status']))
-        if validate_user(username, password)['status'] == 'allow':
+        
+        if validate_user(username, password)['status'] == 'allowed':
             print(Fore.GREEN+"Inicio de sesión exitoso")
             print(Fore.BLUE+"Bienvenido", username)
             actions_menu(username, password)
         else:
             print(Fore.RED+"Usuario o contraseña incorrectos")
             main()  
-       
+    elif teclado == 2:
+        username: str = input("Ingrese su nombre de usuario: ")
+        password: str = input("Ingrese su contraseña: ")
+        create_user(username, password)
+        main()
+        
 main()
