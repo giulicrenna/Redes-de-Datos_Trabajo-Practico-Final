@@ -83,14 +83,14 @@ def add_nobel(username: str, password: str, nobel_data: NewNobel):
     return {"detail": "Nobel prize added successfully"}
 
 @app.post("/create_user/{username}/{password}")
-def create_user(username: str, password: str):
+def create_user_endpoint(username: str, password: str):
     if not create_user(username, password):
         raise fastapi.HTTPException(status_code=400, detail="La creación falló")
     
     return fastapi.HTTPException(status_code=200)
 
 @app.post('/change_password/{username}/{password}/{new_password}')
-def change_password_api(username: str, password: str, new_password: str):
+def change_password_endpoint(username: str, password: str, new_password: str):
     if not change_password(username, password, new_password):
         return fastapi.HTTPException(status_code=401)
     
