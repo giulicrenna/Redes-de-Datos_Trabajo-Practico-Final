@@ -43,8 +43,8 @@ def add_nobel(username: str, password: str, nobel_data: dict):
     response = requests.post(f"{base_url}/add_nobel/{username}/{password}", json = nobel_data)
     return response.text if response.status_code == 200 else (response.status_code, response.text)
 
-def delete_nobel(username: str, password: str, nobel_data: dict):
-    response = requests.put(f"{base_url}/delete_nobel/{username}/{password}", json = nobel_data)
+def delete_nobel(username: str, password: str, laureate_id: str):
+    response = requests.put(f"{base_url}/delete_nobel/{username}/{password}/{laureate_id}")
     return response.text if response.status_code == 200 else (response.status_code, response.text)
 
 def update_nobel(username: str, password: str, nobel_data: dict):
@@ -94,7 +94,7 @@ def _menu_acciones() -> None:
     print(Fore.BLUE+"3. Buscar Premio Nobel por categoría")
     print(Fore.BLUE+"4. Buscar Premio Nobel por año")
     print(Fore.BLUE+"5. Agregar un Premio Nobel")
-    print(Fore.BLUE+"6. Modificar un Premio Nobel")
+    print(Fore.BLUE+"6. (Sin implementar) Modificar un Premio Nobel")
     print(Fore.BLUE+"7. Eliminar un Premio Nobel")
     print(Fore.BLUE+"9. Cambiar Contraseña")
     print(Fore.RED+"0. Salir")
@@ -153,8 +153,7 @@ def actions_menu(user:str, password:str):
             
         #Borrar Premio Nobel                            #PROBAR
         elif teclado == 7:
-            nobel_data = _get_nobel_data()
-            delete_nobel(user, password, nobel_data)
+            delete_nobel(user, password, input("Ingrese ID: "))
             continue
         
         #Salir
