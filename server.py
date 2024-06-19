@@ -97,8 +97,41 @@ def create_user_api(username: str, password: str):
 def change_password_api(username: str, password: str, new_password: str):
     if not change_password(username, password, new_password):
         return fastapi.HTTPException(status_code=401)
+    change_password
+    return fastapi.HTTPException(status_code=200)
+
+@app.put('/delete_nobel/{username}/{password}')
+def delete_nobel_api(username: str, password: str, nobel_data: Laureates):
+    if nobel_data.id not in nobels_handler():
+        return fastapi.HTTPException(status_code=404)
+    
+    nobels_handler().remove(nobel_data.id)
+    return fastapi.HTTPException(status_code=200)
+
+
+@app.put('/update_nobel/{username}/{password}')
+def update_nobel_api(username: str, password: str, nobel_data: NewNobel):
+    check: bool = (nobels_handler.laureates[id] == nobel_data.laureates[id] and nobel_data.laureates[id] != None and 
+            nobel_data.year == nobels_handler.year and nobel_data.category == nobels_handler.category)
+    
+    if not check:
+        return fastapi.HTTPException(status_code=404)
+
+    nobels_handler.laureates['firstname'] = nobel_data.firstname
+    nobels_handler.laureates['surname'] = nobel_data.surname
+    nobels_handler.laureates['motivation'] = nobel_data.motivation
+    nobels_handler.laureates['share'] = nobel_data.share
     
     return fastapi.HTTPException(status_code=200)
+
+@app.get('/validate_user/{username}/{password}')
+def validate_user_api(username: str, password:str):
+    if not validate_user(username, password):
+        print('IF API')
+        {"status":"nowAllow"}
+    else:
+        return {"status":"allow"}
+
 
 
 

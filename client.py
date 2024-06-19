@@ -2,6 +2,7 @@ import requests
 import sys
 import json
 from colorama import init, Fore, Style
+import json
 
 HOST: str = "http://localhost"
 PORT: str = "8000"
@@ -40,25 +41,24 @@ def add_nobel(username: str, password: str, nobel_data: dict):
     return response.text if response.status_code == 200 else (response.status_code, response.text)
 
 def delete_nobel(username: str, password: str, nobel_data: dict):
-    response = requests.delete(f"{base_url}/delete_nobel/{username}/{password}", json = nobel_data)
-    return response.text if response.status_code == 200 else (response.status_code, response.txt)
+    response = requests.put(f"{base_url}/delete_nobel/{username}/{password}", json = nobel_data)
+    return response.text if response.status_code == 200 else (response.status_code, response.text)
 
 def update_nobel(username: str, password: str, nobel_data: dict):
-    response = requests.patch(f"{base_url}/delete_nobel/{username}/{password}", json = nobel_data)
-    return response.text if response.status_code == 200 else (response.status_code, response.txt)
+    response = requests.put(f"{base_url}/delete_nobel/{username}/{password}", json = nobel_data)
+    return response.text if response.status_code == 200 else (response.status_code, response.text)
 
 def validate_user(username: str, password:str):
     response = requests.get(f"{base_url}/validate_user/{username}/{password}")
-    return response.text if response.status_code == 200 else (response.status_code, response.txt)
+    return json.loads(response.text)
 
 def create_user(username: str, password: str):
     response = requests.post(f"{base_url}/create_user/{username}/{password}")
-    print (response.text)
-    return response.text if response.status_code == 200 else (response.status_code, response.txt)
+    return "Usuario creado correctamente." if response.status_code == 200 else (response.status_code, response.text)
 
 def change_password(username: str, password: str, new_password: str):
     response = requests.post(f"{base_url}/change_password/{username}/{password}/{new_password}")
-    return response.text if response.status_code == 200 else (response.status_code, response.txt)
+    return "Modificación de contraseña realizada correctamente." if response.status_code == 200 else (response.status_code, response.text)
 
 
 def _get_nobel_data() -> list[dict]:
@@ -94,7 +94,8 @@ def _menu_acciones() -> None:
     print(Fore.BLUE+"5. Agregar un Premio Nobel")
     print(Fore.BLUE+"6. Modificar un Premio Nobel")
     print(Fore.BLUE+"7. Eliminar un Premio Nobel")
-    print(Fore.RED+"8. Salir")
+    print(Fore.BLUE+"9. Cambiar Contraseña")
+    print(Fore.RED+"0. Salir")
 
 
 
@@ -117,40 +118,53 @@ def actions_menu(user:str, password:str):
         #Lista Premios Nobel
         if teclado == 1: 
             get_all_nobels(user, password)            #OK
+            _menu_acciones()
 
         #Lista Premios Nobel por categoría
         elif teclado == 2:                          #OK
             get_all_categories(user, password)
+            _menu_acciones()
 
         #Buscar Premios Nobel por categoría
         elif teclado == 3: 
             category = input("Ingrese categoría: ")
             get_nobel_by_category(user, password, category)     #OK
+            continue
 
         #Buscar Premios Nobel por años
         elif teclado == 4:                                  #OK
             year = input("Ingrese año: ")
             get_nobel_by_year(user, password, year)
+            continue
             
         #Agregar Premio Nobel
         elif teclado == 5:                          #OK
             nobel_data = _get_nobel_data()
             add_nobel(user, password, nobel_data)
+            continue
             
         #Actualizar Premio Nobel
         elif teclado == 6:                          #PROBAR
             nobel_data = _get_nobel_data()
             update_nobel(user, password, nobel_data)
+            continue
             
         #Borrar Premio Nobel                            #PROBAR
         elif teclado == 7:
             nobel_data = _get_nobel_data()
             delete_nobel(user, password, nobel_data)
+            continue
         
         #Salir
-        elif teclado == 8:
+        elif teclado == 0:
             print(Fore.BLUE+"Gracias por usar el Software")
             sys.exit()
+
+        elif teclado == 9:
+            new_password:str = input("Ingrese nueva contraseña: ")
+            change_password(user, new_password)
+            actions_menu(user, password,new_password)
+            continue
         
         else:
             print(Fore.RED+"####################")
@@ -187,7 +201,8 @@ def main():
     else:
         username: str = input("Ingrese su nombre de usuario: ")
         password: str = input("Ingrese su contraseña: ")
-        if validate_user(username, password) == 200:
+        #print(type(validate_user(username, password)['status']))
+        if validate_user(username, password)['status'] == 'allow':
             print(Fore.GREEN+"Inicio de sesión exitoso")
             print(Fore.BLUE+"Bienvenido", username)
             actions_menu(username, password)
