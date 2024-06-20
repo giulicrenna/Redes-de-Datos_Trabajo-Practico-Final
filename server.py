@@ -89,14 +89,14 @@ def create_user_endpoint(username: str, password: str):
     
     return fastapi.HTTPException(status_code=200)
 
-@app.post('/change_password/{username}/{password}/{new_password}')
+@app.patch('/change_password/{username}/{password}/{new_password}')
 def change_password_endpoint(username: str, password: str, new_password: str):
     if not change_password(username, password, new_password):
-        return fastapi.HTTPException(status_code=401)
+        raise fastapi.HTTPException(status_code=401, detail="Unauthorized")
     
-    return fastapi.HTTPException(status_code=200)
+    return {"Contraseña acutalizada correctamente"}
 
-@app.delete('/delete_nobel/{username}/{password}/laureate_id')
+@app.delete('/delete_nobel/{username}/{password}/{laureate_id}')
 def delete_nobel_api(username: str, password: str, laureate_id: str):
     if not validate_user(username, password):
         raise fastapi.HTTPException(status_code=401, detail="Unauthorized")
@@ -120,8 +120,7 @@ def delete_nobel_api(username: str, password: str, laureate_id: str):
 @app.get('/validate_user/{username}/{password}')
 def validate_user_api(username: str, password:str):
     if not validate_user(username, password):
-        return {"status":"notAllowed"}
-        
+        return {"status":"notAllowed"}       
     return {"status":"allowed"}
 
 if __name__ == "__main__":

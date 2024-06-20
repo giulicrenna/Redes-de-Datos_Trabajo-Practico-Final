@@ -64,7 +64,9 @@ def change_password(username: str, old_password: str, new_password: str) -> bool
     
     for user in users["users"]:
         if user['username'] == username and user['password'] == hash_password(old_password):
-            user["password"] = hash_password(new_password)
+            user['password'] = hash_password(new_password)
+            with open(USERS_PATH, 'w') as file_handler:
+                json.dump(users, file_handler, indent=4)
             return True
     
     return False

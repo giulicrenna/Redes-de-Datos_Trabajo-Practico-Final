@@ -44,8 +44,8 @@ def add_nobel(username: str, password: str, nobel_data: dict):
     return response.text if response.status_code == 200 else (response.status_code, response.text)
 
 def delete_nobel(username: str, password: str, laureate_id: str):
-    response = requests.put(f"{base_url}/delete_nobel/{username}/{password}/{laureate_id}")
-    return response.text if response.status_code == 200 else (response.status_code, response.text)
+    response = requests.delete(f"{base_url}/delete_nobel/{username}/{password}/{laureate_id}")
+    return response.status_code
 
 def update_nobel(username: str, password: str, nobel_data: dict):
     response = requests.put(f"{base_url}/delete_nobel/{username}/{password}", json = nobel_data)
@@ -60,8 +60,8 @@ def create_user(username: str, password: str):
     return "Usuario creado correctamente." if response.status_code == 200 else (response.status_code, response.text)
 
 def change_password(username: str, password: str, new_password: str):
-    response = requests.post(f"{base_url}/change_password/{username}/{password}/{new_password}")
-    return "Modificación de contraseña realizada correctamente." if response.status_code == 200 else (response.status_code, response.text)
+    response = requests.patch(f"{base_url}/change_password/{username}/{password}/{new_password}")
+    return (response.status_code, response.text)
 
 def _get_nobel_data() -> list[dict]:
     print("Ingrese datos del premio Nobel")
@@ -88,16 +88,18 @@ def _get_nobel_data() -> list[dict]:
     return nobel_data
 
 def _menu_acciones() -> None:
+    print("##############################")
     print("Acciones:")
-    print(Fore.BLUE+"1. Listar Premios Nobel")
-    print(Fore.BLUE+"2. Listar categorías")
-    print(Fore.BLUE+"3. Buscar Premio Nobel por categoría")
-    print(Fore.BLUE+"4. Buscar Premio Nobel por año")
-    print(Fore.BLUE+"5. Agregar un Premio Nobel")
-    print(Fore.BLUE+"6. (Sin implementar) Modificar un Premio Nobel")
-    print(Fore.BLUE+"7. Eliminar un Premio Nobel")
-    print(Fore.BLUE+"9. Cambiar Contraseña")
+    print(Fore.GREEN+"1. Listar Premios Nobel")
+    print(Fore.GREEN+"2. Listar categorías")
+    print(Fore.GREEN+"3. Buscar Premio Nobel por categoría")
+    print(Fore.GREEN+"4. Buscar Premio Nobel por año")
+    print(Fore.GREEN+"5. Agregar un Premio Nobel")
+    print(Fore.GREEN+"6. (Sin implementar) Modificar un Premio Nobel")
+    print(Fore.GREEN+"7. Eliminar un Premio Nobel")
+    print(Fore.GREEN+"9. Cambiar Contraseña")
     print(Fore.RED+"0. Salir")
+    print("##############################")
 
 
 
@@ -131,19 +133,19 @@ def actions_menu(user:str, password:str):
         elif teclado == 3: 
             category = input("Ingrese categoría: ")
             get_nobel_by_category(user, password, category)     #OK
-            continue
+            _menu_acciones()
 
         #Buscar Premios Nobel por años
         elif teclado == 4:                                  #OK
             year = input("Ingrese año: ")
             get_nobel_by_year(user, password, year)
-            continue
+            _menu_acciones()
             
         #Agregar Premio Nobel
         elif teclado == 5:                          #OK
             nobel_data = _get_nobel_data()
             add_nobel(user, password, nobel_data)
-            continue
+            _menu_acciones()
             
         #Actualizar Premio Nobel
         elif teclado == 6:                          #PROBAR
@@ -151,26 +153,29 @@ def actions_menu(user:str, password:str):
             update_nobel(user, password, nobel_data)
             continue
             
-        #Borrar Premio Nobel                            #PROBAR
+        #Borrar Premio Nobel                            #OK
         elif teclado == 7:
-            delete_nobel(user, password, input("Ingrese ID: "))
-            continue
+            if delete_nobel(user, password, input("Ingrese ID: "))  == 200:
+                print(Fore.GREEN+"Premio Nobel eliminado correctamente.")
+            print(Fore.RED+"Premio Nobel no encontrado.")
+            _menu_acciones()
         
         #Salir
         elif teclado == 0:
-            print(Fore.BLUE+"Gracias por usar el Software")
+            print(Fore.GREEN+("##############################"))
+            print(Fore.GREEN+"Gracias por usar el Software")            
+            print(Fore.GREEN+("##############################"))
             sys.exit()
 
-        elif teclado == 9:
-            new_password:str = input("Ingrese nueva contraseña: ")
-            change_password(user, new_password)
-            actions_menu(user, password,new_password)
+        elif teclado == 9:                      #DEBUG
+            change_password(user,password, input("Ingrese nueva contraseña: "))
+            actions_menu(user, password)
             continue
         
         else:
-            print(Fore.RED+"####################")
+            print(Fore.RED("##############################"))
             print(Fore.RED+"Por favor, ingrese una opción válida.")
-            print(Fore.RED+"####################")
+            print(Fore.RED("##############################"))
             _menu_acciones()
             continue
 
@@ -180,11 +185,13 @@ def main():
     Función principal del programa. Solicita una entrada de teclado
     y ejecuta la acción correspondiente.
     """
-    print(Fore.BLUE+"Bienvenido al Software de Premios Nobel")
-    print(Fore.BLUE+"Pulse una tecla para continuar: ")
-    print(Fore.LIGHTBLUE_EX+"1. Iniciar Sesión")
-    print(Fore.LIGHTBLUE_EX+"2. Crear Cuenta")
+    print(Fore.GREEN+("##############################"))
+    print(Fore.GREEN+"Bienvenido al Software de Premios Nobel")
+    print(Fore.GREEN+"Pulse una tecla para continuar: ")
+    print(Fore.YELLOW+"1. Iniciar Sesión")
+    print(Fore.YELLOW+"2. Crear Cuenta")
     print(Fore.LIGHTRED_EX+"0. Salir")
+    print(Fore.GREEN+("##############################"))
 
     try:
         teclado: str = int(input('> '))
@@ -193,15 +200,14 @@ def main():
         main()
         
     if teclado == 0:
-        print(Fore.BLUE+"Gracias por usar el Software")
+        print(Fore.GREEN+"Gracias por usar el Software")
         sys.exit()
     if teclado == 1:
         username: str = input("Ingrese su nombre de usuario: ")
         password: str = input("Ingrese su contraseña: ")
-        
         if validate_user(username, password)['status'] == 'allowed':
             print(Fore.GREEN+"Inicio de sesión exitoso")
-            print(Fore.BLUE+"Bienvenido", username)
+            print(Fore.GREEN+"Bienvenido", username)
             actions_menu(username, password)
         else:
             print(Fore.RED+"Usuario o contraseña incorrectos")
