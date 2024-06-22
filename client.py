@@ -47,10 +47,6 @@ def delete_nobel(username: str, password: str, laureate_id: str):
     response = requests.delete(f"{base_url}/delete_nobel/{username}/{password}/{laureate_id}")
     return response.status_code
 
-def update_nobel(username: str, password: str, nobel_data: dict):
-    response = requests.put(f"{base_url}/delete_nobel/{username}/{password}", json = nobel_data)
-    return response.text if response.status_code == 200 else (response.status_code, response.text)
-
 def validate_user(username: str, password:str):
     response = requests.get(f"{base_url}/validate_user/{username}/{password}")
     return json.loads(response.text)
@@ -95,8 +91,7 @@ def _menu_acciones() -> None:
     print(Fore.GREEN+"3. Buscar Premio Nobel por categoría")
     print(Fore.GREEN+"4. Buscar Premio Nobel por año")
     print(Fore.GREEN+"5. Agregar un Premio Nobel")
-    print(Fore.GREEN+"6. (Sin implementar) Modificar un Premio Nobel")
-    print(Fore.GREEN+"7. Eliminar un Premio Nobel")
+    print(Fore.GREEN+"6. Eliminar un Premio Nobel")
     print(Fore.GREEN+"9. Cambiar Contraseña")
     print(Fore.RED+"0. Salir")
     print("##############################")
@@ -147,14 +142,8 @@ def actions_menu(user:str, password:str):
             add_nobel(user, password, nobel_data)
             _menu_acciones()
             
-        #Actualizar Premio Nobel
-        elif teclado == 6:                          #PROBAR
-            nobel_data = _get_nobel_data()
-            update_nobel(user, password, nobel_data)
-            continue
-            
         #Borrar Premio Nobel                            #OK
-        elif teclado == 7:
+        elif teclado == 6:
             if delete_nobel(user, password, input("Ingrese ID: "))  == 200:
                 print(Fore.GREEN+"Premio Nobel eliminado correctamente.")
             print(Fore.RED+"Premio Nobel no encontrado.")
@@ -167,7 +156,7 @@ def actions_menu(user:str, password:str):
             print(Fore.GREEN+("##############################"))
             sys.exit()
 
-        elif teclado == 9:                      #DEBUG
+        elif teclado == 9:                      #OK
             change_password(user,password, input("Ingrese nueva contraseña: "))
             actions_menu(user, password)
             continue

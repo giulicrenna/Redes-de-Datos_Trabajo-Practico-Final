@@ -63,3 +63,8 @@ pip3 install -r requirements.txt
 
 source .venv_client/bin/deactivate
 ```
+
+## Cómo correr de forma remota y acceder a la API
+
+- Ingresar al archivo server.py y cambiar el host por la IP del servidor.
+- Ingresar al archivo client.py y cambiar el host por la IP del servidor.
